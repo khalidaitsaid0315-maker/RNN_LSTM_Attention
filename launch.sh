@@ -28,7 +28,7 @@ echo ""
 
 # Vérifier si les dépendances sont installées
 echo "  📦 Vérification des dépendances..."
-python3 -c "import streamlit; import numpy; import sklearn; import matplotlib" 2>/dev/null
+python3 -c "import streamlit; import numpy" 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "  ⚠️  Dépendances manquantes, installation..."
     echo ""
@@ -43,7 +43,7 @@ if [ $? -ne 0 ]; then
     fi
     
     pip install --upgrade pip
-    pip install -r requirements.txt
+    pip install streamlit numpy
     
     if [ $? -ne 0 ]; then
         echo "  ❌ ERREUR lors de l'installation des dépendances"
@@ -63,4 +63,3 @@ echo "  ⏹️  Appuyez sur CTRL+C pour arrêter l'application"
 echo ""
 
 streamlit run app.py
-

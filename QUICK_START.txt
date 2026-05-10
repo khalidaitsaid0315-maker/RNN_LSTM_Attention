@@ -20,7 +20,7 @@ GUIDE D'UTILISATION RAPIDE
 # Ouvrez un terminal/command prompt et exécutez :
 
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+pip install streamlit numpy
 streamlit run app.py
 
 
@@ -92,7 +92,6 @@ Si vous avez des fichiers .npy :
 
 app_RNN_LSTM/
 ├── app.py                    # 🎯 Application principale
-├── requirements.txt          # 📦 Dépendances
 ├── utils.py                  # 🛠️  Utilitaires pour charger les données
 ├── README.md                 # 📖 Documentation complète
 ├── launch.bat               # ▶️  Lanceur (Windows)
@@ -112,7 +111,7 @@ Q: L'app ne démarre pas
 R: Vérifiez que Python est installé : python --version
 
 Q: Erreur "ModuleNotFoundError"
-R: Installez les dépendances : pip install -r requirements.txt
+R: Installez les dépendances : pip install streamlit numpy
 
 Q: Comment tester avec ma propre données ?
 R: Consultez la section "UTILISER AVEC DES DONNÉES RÉELLES"
@@ -162,7 +161,7 @@ scikit-learn : https://scikit-learn.org/stable
 En cas de problème :
   1. Lisez le README.md pour la documentation complète
   2. Vérifiez que Python 3.8+ est installé
-  3. Réinstallez les dépendances : pip install -r requirements.txt
+  3. Réinstallez les dépendances : pip install streamlit numpy
   4. Redémarrez l'application
 
 

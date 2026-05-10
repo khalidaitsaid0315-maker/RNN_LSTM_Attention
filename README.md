@@ -59,7 +59,7 @@ venv\Scripts\activate
 source venv/bin/activate
 
 # 3. Installer les dépendances
-pip install -r requirements.txt
+pip install streamlit numpy
 ```
 
 ## ▶️ Lancer l'Application
@@ -236,7 +236,6 @@ RNN+Attention (Manuel)
 ```
 app_RNN_LSTM/
 ├── app.py                 # Application Streamlit principale
-├── requirements.txt       # Dépendances Python
 ├── README.md             # Ce fichier
 ├── launch.bat            # Script de lancement (Windows)
 └── launch.sh             # Script de lancement (macOS/Linux)

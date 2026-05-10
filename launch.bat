@@ -26,11 +26,11 @@ echo.
 
 REM Vérifier si les dépendances sont installées
 echo  📦 Vérification des dépendances...
-python -c "import streamlit; import numpy; import sklearn; import matplotlib" >nul 2>&1
+python -c "import streamlit; import numpy" >nul 2>&1
 if errorlevel 1 (
     echo  ⚠️  Dépendances manquantes, installation...
     echo.
-    pip install -r requirements.txt
+    pip install streamlit numpy
     if errorlevel 1 (
         echo  ❌ ERREUR lors de l'installation des dépendances
         pause
