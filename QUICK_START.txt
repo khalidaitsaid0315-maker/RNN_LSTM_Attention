@@ -1,0 +1,188 @@
+"""
+GUIDE D'UTILISATION RAPIDE
+═══════════════════════════════════════════════════════════════════════════
+
+🚀 DÉMARRAGE RAPIDE (Windows)
+─────────────────────────────────────────────────────────────────────────
+1. Double-cliquez sur : launch.bat
+2. Attendez que l'application se lance
+3. Elle s'ouvrira automatiquement dans votre navigateur
+
+🚀 DÉMARRAGE RAPIDE (macOS/Linux)
+─────────────────────────────────────────────────────────────────────────
+1. Ouvrez un terminal
+2. Allez dans ce dossier : cd app_RNN_LSTM
+3. Rendez le script exécutable : chmod +x launch.sh
+4. Lancez : ./launch.sh
+
+📦 INSTALLATION MANUELLE
+─────────────────────────────────────────────────────────────────────────
+# Ouvrez un terminal/command prompt et exécutez :
+
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+streamlit run app.py
+
+
+🎯 PREMIÈRE UTILISATION
+─────────────────────────────────────────────────────────────────────────
+
+L'application démarre avec des paramètres par défaut :
+  • 500 échantillons
+  • 60 pas de temps
+  • 18 features
+  • 20% pour le test
+
+Cliquez sur "🚀 Exécuter l'analyse" pour lancer la comparaison.
+
+
+📊 COMPRENDRE LES RÉSULTATS
+─────────────────────────────────────────────────────────────────────────
+
+MÉTRIQUES :
+  • MSE (Mean Squared Error) : Plus bas = mieux
+  • RMSE (Root Mean Squared Error) : En unités des données
+  • MAE (Mean Absolute Error) : Erreur moyenne absolue
+
+GRAPHIQUES :
+  • Barplot : Vue d'ensemble des performances
+  • Time Series : Voir les prédictions en détail
+  • Distribution : Vérifier que les erreurs sont centrées en 0
+  • Scatter : Alignement sur la diagonale = bon modèle
+
+
+💡 CONSEILS D'UTILISATION
+─────────────────────────────────────────────────────────────────────────
+
+✅ À ESSAYER :
+  1. Augmentez les échantillons jusqu'à 1000
+  2. Testez avec 128 pas de temps
+  3. Augmentez la dimension d'attention à 64
+  4. Comparez Ridge avec RNN+Attention
+  5. Observez comment les poids d'attention changent
+
+⚠️ À SAVOIR :
+  • Plus d'échantillons = meilleure convergence
+  • Plus de timesteps = plus complexe à apprendre
+  • MLP-LSTM est plus lent mais plus puissant
+  • L'attention apporte une meilleure interprétabilité
+
+
+🔄 UTILISER AVEC DES DONNÉES RÉELLES
+─────────────────────────────────────────────────────────────────────────
+
+Si vous avez des fichiers .npy :
+
+1. Créez un dossier "data" dans le répertoire app_RNN_LSTM
+2. Placez-y vos fichiers :
+   data/X_train.npy
+   data/y_train.npy
+   data/X_test.npy
+   data/y_test.npy
+
+3. Dans l'application, ouvrez la barre latérale :
+   Source des données -> Fichiers .npy
+   Dossier des .npy -> ./data
+
+4. Cliquez sur "Exécuter l'analyse"
+
+
+📁 STRUCTURE DU PROJET
+─────────────────────────────────────────────────────────────────────────
+
+app_RNN_LSTM/
+├── app.py                    # 🎯 Application principale
+├── requirements.txt          # 📦 Dépendances
+├── utils.py                  # 🛠️  Utilitaires pour charger les données
+├── README.md                 # 📖 Documentation complète
+├── launch.bat               # ▶️  Lanceur (Windows)
+├── launch.sh                # ▶️  Lanceur (macOS/Linux)
+├── QUICK_START.txt          # Ce fichier
+└── data/                    # (Optionnel) Vos données réelles
+    ├── X_train.npy
+    ├── y_train.npy
+    ├── X_test.npy
+    └── y_test.npy
+
+
+❓ QUESTIONS FRÉQUENTES
+─────────────────────────────────────────────────────────────────────────
+
+Q: L'app ne démarre pas
+R: Vérifiez que Python est installé : python --version
+
+Q: Erreur "ModuleNotFoundError"
+R: Installez les dépendances : pip install -r requirements.txt
+
+Q: Comment tester avec ma propre données ?
+R: Consultez la section "UTILISER AVEC DES DONNÉES RÉELLES"
+
+Q: Quel modèle choisir ?
+R: Ridge pour la rapidité, RNN+Attention pour la précision
+
+Q: Pourquoi Ridge est parfois meilleur ?
+R: Dépend de la complexité réelle des données
+
+
+🎓 MODÈLES EXPLIQUÉS EN SIMPLE
+─────────────────────────────────────────────────────────────────────────
+
+Ridge (Baseline)
+  • Modèle linéaire : y = w₀ + w₁×x₁ + w₂×x₂ + ...
+  • Rapide, stable, bon baseline
+
+MLP-RNN (tanh)
+  • Perceptron avec couches cachées
+  • Activation tanh = courbe S
+  • Simule un RNN sans la récurrence temporelle
+
+MLP-LSTM (relu)
+  • Réseau plus profond
+  • Activation ReLU = max(0, x)
+  • Plus de capacité pour les patterns complexes
+
+RNN+Attention
+  • Combine un réseau de neurones + mécanisme d'attention
+  • L'attention = "Focus sur les pas de temps importants"
+  • Plus interprétable, voir les poids d'attention
+
+
+🔗 RESSOURCES
+─────────────────────────────────────────────────────────────────────────
+
+Streamlit :    https://docs.streamlit.io
+NumPy :        https://numpy.org/doc
+Matplotlib :   https://matplotlib.org/stable/index.html
+scikit-learn : https://scikit-learn.org/stable
+
+
+📞 SUPPORT
+─────────────────────────────────────────────────────────────────────────
+
+En cas de problème :
+  1. Lisez le README.md pour la documentation complète
+  2. Vérifiez que Python 3.8+ est installé
+  3. Réinstallez les dépendances : pip install -r requirements.txt
+  4. Redémarrez l'application
+
+
+═══════════════════════════════════════════════════════════════════════════
+📝 Version : 1.0
+📅 Dernière mise à jour : 2024
+🎯 Objectif : Interface intuitive pour l'apprentissage des modèles RNN/LSTM
+═══════════════════════════════════════════════════════════════════════════
+"""
+
+print(__doc__)
+
+# Afficher les infos système
+import sys
+import platform
+
+print(f"\n🔧 INFORMATIONS SYSTÈME")
+print(f"─" * 60)
+print(f"Python:  {sys.version.split()[0]}")
+print(f"Système: {platform.system()} {platform.release()}")
+print(f"\n✅ Tout est prêt ! Lancez l'application avec :")
+print(f"   streamlit run app.py")
+print(f"─" * 60)
