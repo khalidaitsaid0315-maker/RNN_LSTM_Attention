@@ -7,12 +7,8 @@ MLP-LSTM et un modele avec attention manuelle.
 
 import warnings
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import streamlit as st
-from sklearn.linear_model import Ridge
-from sklearn.neural_network import MLPRegressor
 
 from utils import load_npy_data, validate_data_shapes
 
@@ -98,6 +94,8 @@ class SimpleAttentionModel:
     """Modele avec mecanisme d'attention manuel."""
 
     def __init__(self, attention_dim=32, alpha=1.0):
+        from sklearn.linear_model import Ridge
+
         self.attention_dim = attention_dim
         self.alpha = alpha
         self.Wa = None
@@ -167,9 +165,15 @@ with st.sidebar:
 if run_button:
     with st.spinner("Preparation des donnees..."):
         try:
+            from sklearn.linear_model import Ridge
+            from sklearn.neural_network import MLPRegressor
+
             X_train, y_train, X_test, y_test = prepare_dataset(
                 data_source, data_dir, n_samples, seq_len, n_features, test_size
             )
+        except ImportError as exc:
+            st.error(f"Dependance Python manquante ou incompatible : {exc}")
+            st.stop()
         except Exception as exc:
             st.error(f"Impossible de preparer les donnees : {exc}")
             st.stop()
@@ -251,6 +255,13 @@ if "results" not in st.session_state:
 
 
 results = st.session_state["results"]
+try:
+    import matplotlib.pyplot as plt
+    import pandas as pd
+except ImportError as exc:
+    st.error(f"Dependance Python manquante ou incompatible : {exc}")
+    st.stop()
+
 X_train = results["X_train"]
 X_test = results["X_test"]
 y_test = results["y_test"]
