@@ -36,10 +36,8 @@ def add_style():
 
 def load_dependencies():
     import numpy as np
-    from sklearn.linear_model import Ridge
-    from sklearn.neural_network import MLPRegressor
 
-    return np, Ridge, MLPRegressor
+    return np
 
 
 def generate_sample_data(np, n_samples=300, seq_len=40, n_features=15):
@@ -97,14 +95,50 @@ def softmax(np, x, axis=-1):
     return e / e.sum(axis=axis, keepdims=True)
 
 
+def add_bias(np, X):
+    return np.c_[np.ones(X.shape[0]), X]
+
+
+def ridge_predict(np, X_train, y_train, X_test, alpha):
+    Xb_train = add_bias(np, X_train)
+    Xb_test = add_bias(np, X_test)
+    reg = alpha * np.eye(Xb_train.shape[1])
+    reg[0, 0] = 0.0
+    coef = np.linalg.pinv(Xb_train.T @ Xb_train + reg) @ Xb_train.T @ y_train
+    return Xb_test @ coef
+
+
+def random_feature_predict(np, X_train, y_train, X_test, hidden_layers, alpha, activation):
+    rng = np.random.default_rng(42)
+    features_train = X_train
+    features_test = X_test
+
+    for layer_size in hidden_layers:
+        scale = 1.0 / np.sqrt(max(features_train.shape[1], 1))
+        W = rng.normal(scale=scale, size=(features_train.shape[1], layer_size))
+        b = rng.normal(scale=0.1, size=layer_size)
+        z_train = features_train @ W + b
+        z_test = features_test @ W + b
+
+        if activation == "tanh":
+            features_train = np.tanh(z_train)
+            features_test = np.tanh(z_test)
+        else:
+            features_train = np.maximum(0.0, z_train)
+            features_test = np.maximum(0.0, z_test)
+
+    return ridge_predict(np, features_train, y_train, features_test, alpha)
+
+
 class SimpleAttentionModel:
-    def __init__(self, np, Ridge, attention_dim=32, alpha=1.0):
+    def __init__(self, np, attention_dim=32, alpha=1.0):
         self.np = np
         self.attention_dim = attention_dim
         self.alpha = alpha
         self.Wa = None
         self.v = None
-        self.ridge = Ridge(alpha=alpha)
+        self.context_train = None
+        self.y_train = None
         self.weights = None
 
     def _init_weights(self, n_features):
@@ -117,7 +151,8 @@ class SimpleAttentionModel:
         scores = self.np.tanh(X @ self.Wa) @ self.v
         weights = softmax(self.np, scores, axis=1)
         context = self.np.einsum("st,stf->sf", weights, X)
-        self.ridge.fit(context, y)
+        self.context_train = context
+        self.y_train = y
         self.weights = weights
         return self
 
@@ -125,11 +160,11 @@ class SimpleAttentionModel:
         scores = self.np.tanh(X @ self.Wa) @ self.v
         weights = softmax(self.np, scores, axis=1)
         context = self.np.einsum("st,stf->sf", weights, X)
-        return self.ridge.predict(context)
+        return ridge_predict(self.np, self.context_train, self.y_train, context, self.alpha)
 
 
 def train_models(config):
-    np, Ridge, MLPRegressor = load_dependencies()
+    np = load_dependencies()
 
     if config["data_source"] == "Fichiers .npy":
         X_train, y_train, X_test, y_test = load_npy_dataset(np, config["data_dir"])
@@ -145,33 +180,36 @@ def train_models(config):
     X_train_flat = flatten_sequences(X_train)
     X_test_flat = flatten_sequences(X_test)
 
-    ridge = Ridge(alpha=config["ridge_alpha"])
-    ridge.fit(X_train_flat, y_train)
-    ridge_preds = ridge.predict(X_test_flat)
+    ridge_preds = ridge_predict(
+        np,
+        X_train_flat,
+        y_train,
+        X_test_flat,
+        config["ridge_alpha"],
+    )
 
-    mlp_rnn = MLPRegressor(
-        hidden_layer_sizes=config["mlp_hidden_size"],
+    mlp_rnn_preds = random_feature_predict(
+        np,
+        X_train_flat,
+        y_train,
+        X_test_flat,
+        config["mlp_hidden_size"],
+        config["ridge_alpha"],
         activation="tanh",
-        max_iter=config["max_iter"],
-        early_stopping=True,
-        random_state=42,
     )
-    mlp_rnn.fit(X_train_flat, y_train)
-    mlp_rnn_preds = mlp_rnn.predict(X_test_flat)
 
-    mlp_lstm = MLPRegressor(
-        hidden_layer_sizes=tuple(x * 2 for x in config["mlp_hidden_size"]),
+    mlp_lstm_preds = random_feature_predict(
+        np,
+        X_train_flat,
+        y_train,
+        X_test_flat,
+        tuple(x * 2 for x in config["mlp_hidden_size"]),
+        config["ridge_alpha"],
         activation="relu",
-        max_iter=config["max_iter"],
-        early_stopping=True,
-        random_state=42,
     )
-    mlp_lstm.fit(X_train_flat, y_train)
-    mlp_lstm_preds = mlp_lstm.predict(X_test_flat)
 
     attn_model = SimpleAttentionModel(
         np,
-        Ridge,
         attention_dim=config["attention_dim"],
         alpha=config["ridge_alpha"],
     )
@@ -226,7 +264,6 @@ def render_sidebar():
             [(64, 32), (128, 64), (256, 128, 64)],
         )
         attention_dim = st.slider("Attention dimension", 8, 64, 32, step=8)
-        max_iter = st.slider("Iterations MLP", 50, 300, 120, step=50)
         run_button = st.button("Executer l'analyse", use_container_width=True)
         clear_cache_button = st.button("Vider le cache", use_container_width=True)
 
@@ -246,7 +283,6 @@ def render_sidebar():
         "ridge_alpha": ridge_alpha,
         "mlp_hidden_size": mlp_hidden_size,
         "attention_dim": attention_dim,
-        "max_iter": max_iter,
         "run_button": run_button,
         "clear_cache_button": clear_cache_button,
     }
