@@ -142,9 +142,9 @@ with st.sidebar:
 
     st.subheader("Donnees")
     if data_source == "Synthetiques":
-        n_samples = st.slider("Nombre d'echantillons", 100, 1000, 500, step=100)
-        seq_len = st.slider("Longueur de sequence", 10, 100, 60, step=10)
-        n_features = st.slider("Nombre de features", 5, 50, 18, step=5)
+        n_samples = st.slider("Nombre d'echantillons", 100, 1000, 300, step=100)
+        seq_len = st.slider("Longueur de sequence", 10, 100, 40, step=10)
+        n_features = st.slider("Nombre de features", 5, 50, 15, step=5)
         test_size = st.slider("Taille du test (%)", 10, 40, 20, step=5)
         data_dir = "./data"
     else:
@@ -159,11 +159,12 @@ with st.sidebar:
         [(64, 32), (128, 64), (256, 128, 64)],
     )
     attention_dim = st.slider("Attention dimension", 8, 64, 32, step=8)
+    max_iter = st.slider("Iterations MLP", 50, 300, 120, step=50)
 
     run_button = st.button("Executer l'analyse", use_container_width=True)
 
 
-if run_button or "results" not in st.session_state:
+if run_button:
     with st.spinner("Preparation des donnees..."):
         try:
             X_train, y_train, X_test, y_test = prepare_dataset(
@@ -185,7 +186,7 @@ if run_button or "results" not in st.session_state:
         mlp_rnn = MLPRegressor(
             hidden_layer_sizes=mlp_hidden_size,
             activation="tanh",
-            max_iter=300,
+            max_iter=max_iter,
             early_stopping=True,
             random_state=42,
             verbose=0,
@@ -197,7 +198,7 @@ if run_button or "results" not in st.session_state:
         mlp_lstm = MLPRegressor(
             hidden_layer_sizes=tuple(x * 2 for x in mlp_hidden_size),
             activation="relu",
-            max_iter=300,
+            max_iter=max_iter,
             early_stopping=True,
             random_state=42,
             verbose=0,
@@ -230,6 +231,23 @@ if run_button or "results" not in st.session_state:
         },
         "attn_weights": attn_model.weights,
     }
+
+if "results" not in st.session_state:
+    st.info(
+        "Configurez les parametres dans la barre laterale, puis cliquez sur "
+        "\"Executer l'analyse\" pour lancer les modeles."
+    )
+    st.markdown(
+        """
+        ### Modeles disponibles
+
+        1. Ridge Regression
+        2. MLP-RNN avec activation tanh
+        3. MLP-LSTM avec activation relu
+        4. RNN avec mecanisme d'attention manuel
+        """
+    )
+    st.stop()
 
 
 results = st.session_state["results"]
