@@ -7,10 +7,7 @@ MLP-LSTM et un modele avec attention manuelle.
 
 import warnings
 
-import numpy as np
 import streamlit as st
-
-from utils import load_npy_data, validate_data_shapes
 
 warnings.filterwarnings("ignore")
 
@@ -53,6 +50,8 @@ st.markdown(
 @st.cache_data(show_spinner=False)
 def generate_sample_data(n_samples=500, seq_len=60, n_features=18):
     """Genere des donnees de series temporelles synthetiques."""
+    import numpy as np
+
     rng = np.random.default_rng(42)
     X = rng.normal(size=(n_samples, seq_len, n_features))
     y = np.mean(X[:, -5:, :5], axis=(1, 2)) + rng.normal(scale=0.05, size=n_samples)
@@ -66,6 +65,8 @@ def flatten_sequences(X):
 
 def calculate_metrics(predictions, targets):
     """Calcule MSE, RMSE et MAE."""
+    import numpy as np
+
     mse = np.mean((predictions - targets) ** 2)
     rmse = np.sqrt(mse)
     mae = np.mean(np.abs(predictions - targets))
@@ -75,6 +76,8 @@ def calculate_metrics(predictions, targets):
 def prepare_dataset(data_source, data_dir, n_samples, seq_len, n_features, test_size):
     """Prepare train/test arrays from synthetic data or .npy files."""
     if data_source == "Fichiers .npy":
+        from utils import load_npy_data, validate_data_shapes
+
         X_train, y_train, X_test, y_test = load_npy_data(data_dir)
         validate_data_shapes(X_train, y_train, X_test, y_test)
         return X_train, y_train, X_test, y_test
@@ -86,6 +89,8 @@ def prepare_dataset(data_source, data_dir, n_samples, seq_len, n_features, test_
 
 def softmax(x, axis=-1):
     """Softmax numeriquement stable."""
+    import numpy as np
+
     e = np.exp(x - x.max(axis=axis, keepdims=True))
     return e / e.sum(axis=axis, keepdims=True)
 
@@ -104,11 +109,15 @@ class SimpleAttentionModel:
         self.weights = None
 
     def _init_weights(self, n_features):
+        import numpy as np
+
         rng = np.random.default_rng(42)
         self.Wa = rng.normal(scale=0.1, size=(n_features, self.attention_dim))
         self.v = rng.normal(scale=0.1, size=self.attention_dim)
 
     def fit(self, X, y):
+        import numpy as np
+
         self._init_weights(X.shape[2])
         scores = np.tanh(X @ self.Wa) @ self.v
         weights = softmax(scores, axis=1)
@@ -118,6 +127,8 @@ class SimpleAttentionModel:
         return self
 
     def predict(self, X):
+        import numpy as np
+
         scores = np.tanh(X @ self.Wa) @ self.v
         weights = softmax(scores, axis=1)
         context = np.einsum("st,stf->sf", weights, X)
@@ -165,6 +176,7 @@ with st.sidebar:
 if run_button:
     with st.spinner("Preparation des donnees..."):
         try:
+            import numpy as np
             from sklearn.linear_model import Ridge
             from sklearn.neural_network import MLPRegressor
 
@@ -261,6 +273,8 @@ try:
 except ImportError as exc:
     st.error(f"Dependance Python manquante ou incompatible : {exc}")
     st.stop()
+
+import numpy as np
 
 X_train = results["X_train"]
 X_test = results["X_test"]
