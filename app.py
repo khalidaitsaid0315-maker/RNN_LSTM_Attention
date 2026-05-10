@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore")
 
 st.set_page_config(
     page_title="RNN/LSTM Interface",
-    page_icon="📈",
+    page_icon="chart_with_upwards_trend",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -127,7 +127,7 @@ class SimpleAttentionModel:
         return self.ridge.predict(context)
 
 
-st.markdown("<div class='main-header'>📈 RNN/LSTM Interface</div>", unsafe_allow_html=True)
+st.markdown("<div class='main-header'>RNN/LSTM Interface</div>", unsafe_allow_html=True)
 st.markdown("Comparaison de modeles pour la prediction de series financieres")
 st.markdown("---")
 
@@ -244,7 +244,7 @@ models_names = list(metrics.keys())
 colors = ["#808080", "#1f77b4", "#ff7f0e", "#2ca02c"]
 
 
-st.markdown("<div class='sub-header'>📊 Resultats</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-header'>Resultats</div>", unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
 for col, name in zip([col1, col2, col3, col4], models_names):
@@ -264,7 +264,7 @@ st.download_button(
 )
 
 st.markdown("---")
-st.markdown("### 📈 Comparaison des Modeles")
+st.markdown("### Comparaison des Modeles")
 
 fig, axes = plt.subplots(1, 3, figsize=(14, 4))
 for ax, metric_key in zip(axes, ["MSE", "RMSE", "MAE"]):
@@ -281,7 +281,7 @@ plt.tight_layout()
 st.pyplot(fig)
 plt.close(fig)
 
-st.markdown("### 🎯 Predictions vs Valeurs Reelles")
+st.markdown("### Predictions vs Valeurs Reelles")
 fig, axes = plt.subplots(2, 2, figsize=(14, 9))
 for ax, name, color in zip(axes.flat, models_names, colors):
     n_plot = min(100, len(y_test))
@@ -294,7 +294,7 @@ plt.tight_layout()
 st.pyplot(fig)
 plt.close(fig)
 
-st.markdown("### 📊 Distribution des Erreurs")
+st.markdown("### Distribution des Erreurs")
 fig, axes = plt.subplots(2, 2, figsize=(14, 9))
 for ax, name, color in zip(axes.flat, models_names, colors):
     errors = preds[name] - y_test
@@ -315,7 +315,7 @@ plt.tight_layout()
 st.pyplot(fig)
 plt.close(fig)
 
-st.markdown("### 🔍 Analyse Detaillee")
+st.markdown("### Analyse Detaillee")
 fig, axes = plt.subplots(2, 2, figsize=(14, 9))
 for ax, name, color in zip(axes.flat, models_names, colors):
     ax.scatter(y_test, preds[name], alpha=0.3, s=20, color=color)
@@ -331,7 +331,7 @@ st.pyplot(fig)
 plt.close(fig)
 
 st.markdown("---")
-st.markdown("<div class='sub-header'>💡 Interpretations</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-header'>Interpretations</div>", unsafe_allow_html=True)
 
 best_model_name = metrics_df["RMSE"].idxmin()
 col1, col2 = st.columns(2)
