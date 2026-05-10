@@ -228,6 +228,13 @@ def render_sidebar():
         attention_dim = st.slider("Attention dimension", 8, 64, 32, step=8)
         max_iter = st.slider("Iterations MLP", 50, 300, 120, step=50)
         run_button = st.button("Executer l'analyse", use_container_width=True)
+        clear_cache_button = st.button("Vider le cache", use_container_width=True)
+
+        if clear_cache_button:
+            st.cache_data.clear()
+            st.cache_resource.clear()
+            st.session_state.pop("results", None)
+            st.success("Cache Streamlit vide.")
 
     return {
         "data_source": data_source,
@@ -241,6 +248,7 @@ def render_sidebar():
         "attention_dim": attention_dim,
         "max_iter": max_iter,
         "run_button": run_button,
+        "clear_cache_button": clear_cache_button,
     }
 
 
